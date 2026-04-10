@@ -34,7 +34,7 @@ curl https://api.main.exchange/mcp/health
 
 Some tools require USDC payment via the [x402 protocol](https://x402.org). When a paid tool is called without payment, the server responds with a JSON-RPC error containing payment requirements (amount, recipient, network). x402-compatible clients handle this automatically.
 
-**Paid tools**: `createPool`, `launchToken`
+**Paid tools**: `createPool`, `launchToken`, `getPoolsTerminal`, `getPoolTerminal`, `getTokenTerminal`, `getTokenHolders`, `getTokenSentiment`, `getForecastSummary`
 
 ## Tools
 
@@ -55,6 +55,42 @@ curl -s -X POST https://api.main.exchange/mcp \
 curl -s -X POST https://api.main.exchange/mcp \
   -H "Content-Type: application/json" \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"approveTokens","arguments":{"tokenAddress":"0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913","spenderAddress":"0x002E67c3F7BF96eB3aA4066073923e415581d385"}}}' \
+  | jq '.result.content[0].text | fromjson'
+```
+
+**getTokenTerminal** *(paid via x402)* — Get detailed token info from the api-terminal: price, market cap, supply, liquidity, volume, transactions, price changes, and social links.
+
+```bash
+curl -s -X POST https://api.main.exchange/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"getTokenTerminal","arguments":{"tokenAddress":"0x4200000000000000000000000000000000000006"}}}' \
+  | jq '.result.content[0].text | fromjson'
+```
+
+**getTokenHolders** *(paid via x402)* — Get top 100 holders of a token from the api-terminal: address, label, amount, percentage, and USD value.
+
+```bash
+curl -s -X POST https://api.main.exchange/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"getTokenHolders","arguments":{"tokenAddress":"0x4200000000000000000000000000000000000006"}}}' \
+  | jq '.result.content[0].text | fromjson'
+```
+
+**getTokenSentiment** *(paid via x402)* — Get token sentiment analysis from the api-terminal: narrative (summary, catalysts, risks) and community mentions (mood, sentiment breakdown, posts from X/Twitter).
+
+```bash
+curl -s -X POST https://api.main.exchange/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"getTokenSentiment","arguments":{"symbol":"WETH"}}}' \
+  | jq '.result.content[0].text | fromjson'
+```
+
+**getForecastSummary** *(paid via x402)* — Get price forecast summary for an asset (BTC, ETH, SOL) from the api-terminal: outlook, predicted price, support/resistance levels, and probability distribution.
+
+```bash
+curl -s -X POST https://api.main.exchange/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"getForecastSummary","arguments":{"asset":"BTC","horizon":"24h"}}}' \
   | jq '.result.content[0].text | fromjson'
 ```
 
@@ -88,6 +124,24 @@ curl -s -X POST https://api.main.exchange/mcp \
 ```
 
 ### Pools
+
+**getPoolsTerminal** *(paid via x402)* — Get the list of pools on Base from the api-terminal with market data: TVL, 24h volume, token prices, and price changes.
+
+```bash
+curl -s -X POST https://api.main.exchange/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"getPoolsTerminal","arguments":{}}}' \
+  | jq '.result.content[0].text | fromjson'
+```
+
+**getPoolTerminal** *(paid via x402)* — Get detailed information about a specific pool from the api-terminal, including token metadata (symbol, name, image).
+
+```bash
+curl -s -X POST https://api.main.exchange/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"getPoolTerminal","arguments":{"poolAddress":"0x70acdf2ad0bf2402c957154f944c19ef4e1cbae1"}}}' \
+  | jq '.result.content[0].text | fromjson'
+```
 
 **getPools** — Get liquidity pools with TVL, volume, and fees.
 
